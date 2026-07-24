@@ -19,14 +19,14 @@
   #heart-wrap {
     position: fixed;
     top: 50%; left: 50%;
-    transform: translate(-50%, -55%);
+    transform: translate(-50%, -50%);
     z-index: 1;
     cursor: pointer;
     transition: transform 0.15s ease;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
   }
-  #heart-wrap:active { transform: translate(-50%, -55%) scale(0.95); }
+  #heart-wrap:active { transform: translate(-50%, -50%) scale(0.95); }
 
   #heart-svg {
     width: 160px; height: 160px;
@@ -391,14 +391,14 @@ function handleClick(e) {
   exploded = true;
 
   // Hide heart and hint
-  heartWrap.style.transition = 'transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.4s ease';
-  heartWrap.style.transform = 'translate(-50%, -55%) scale(1.4)';
+  heartWrap.style.transition = 'transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease';
+  heartWrap.style.transform = 'translate(-50%, -50%) scale(1.5)';
   setTimeout(() => {
     heartWrap.style.opacity = '0';
-    heartWrap.style.transform = 'translate(-50%, -55%) scale(0)';
-  }, 300);
+    heartWrap.style.transform = 'translate(-50%, -50%) scale(0)';
+  }, 200);
 
-  hint.style.transition = 'opacity 0.6s ease';
+  hint.style.transition = 'opacity 0.4s ease';
   hint.style.opacity = '0';
 
   // Get heart position for explosion origin
@@ -430,12 +430,12 @@ function loop() {
   }
 
   // Show message after explosion settles
-  if (exploded && !explosionDone && particles.length > 0 && clickTime > 0) {
+  if (exploded && !explosionDone && clickTime > 0) {
     let aliveBig = false;
     for (const p of particles) {
-      if (p.size > 4) { aliveBig = true; break; }
+      if (p.size > 6) { aliveBig = true; break; }
     }
-    if (!aliveBig && Date.now() - clickTime > 1200) {
+    if (!aliveBig && Date.now() - clickTime > 500) {
       explosionDone = true;
       message.classList.add('show');
     }
