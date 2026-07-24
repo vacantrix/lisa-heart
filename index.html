@@ -14,6 +14,7 @@
     width: 100vw; height: 100vh;
     display: block;
     z-index: 0;
+    pointer-events: none;
   }
 
   #heart-wrap {
@@ -25,6 +26,7 @@
     transition: transform 0.15s ease;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    touch-action: manipulation;
   }
   #heart-wrap:active { transform: translate(-50%, -50%) scale(0.95); }
 
@@ -74,10 +76,7 @@
     text-align: center;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 0.8s ease;
-  }
-  #message.show {
-    opacity: 1;
+    transition: opacity 0.6s ease, transform 0.6s ease;
   }
   #message .main {
     font: 600 clamp(36px, 10vw, 72px) system-ui, -apple-system, sans-serif;
@@ -384,6 +383,13 @@ function drawBackground() {
   ctx.fillRect(0, 0, W, H);
 }
 
+function showMessage() {
+  if (explosionDone) return;
+  explosionDone = true;
+  message.style.opacity = '1';
+  message.style.transform = 'translate(-50%, -50%) scale(1)';
+}
+
 function handleClick(e) {
   if (exploded) return;
   exploded = true;
@@ -404,16 +410,11 @@ function handleClick(e) {
 
   createExplosion(ex, ey);
 
-  // Show message after 1.2s no matter what (fallback)
-  setTimeout(() => {
-    if (!explosionDone) {
-      explosionDone = true;
-      message.classList.add('show');
-    }
-  }, 1200);
+  showMessage();
 }
 
 heartWrap.addEventListener('click', handleClick);
+heartWrap.addEventListener('touchstart', handleClick, { passive: true });
 
 // === Main Loop ===
 function loop() {
@@ -427,21 +428,7 @@ function loop() {
     drawParticles();
   }
 
-  // Show message after explosion settles
-  if (exploded && !explosionDone && clickTime > 0) {
-    let aliveBig = false;
-    for (const p of particles) {
-      if (p.size > 6) { aliveBig = true; break; }
-    }
-    if (!aliveBig && Date.now() - clickTime > 500) {
-      explosionDone = true;
-      message.classList.add('show');
-    }
-  }
-
-  if (exploded && explosionDone && particles.length === 0 && window.innerWidth <= 480) {
-    // Gentle idle
-  }
+  // Gentle idle (no-op, keeps the loop going)
 
   animFrame = requestAnimationFrame(loop);
 }
