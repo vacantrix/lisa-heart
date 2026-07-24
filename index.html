@@ -384,13 +384,10 @@ function drawBackground() {
   ctx.fillRect(0, 0, W, H);
 }
 
-let clickTime = 0;
-
 function handleClick(e) {
   if (exploded) return;
   exploded = true;
 
-  // Hide heart and hint
   heartWrap.style.transition = 'transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease';
   heartWrap.style.transform = 'translate(-50%, -50%) scale(1.5)';
   setTimeout(() => {
@@ -401,21 +398,22 @@ function handleClick(e) {
   hint.style.transition = 'opacity 0.4s ease';
   hint.style.opacity = '0';
 
-  // Get heart position for explosion origin
   const rect = heartWrap.getBoundingClientRect();
   const ex = rect.left + rect.width / 2;
   const ey = rect.top + rect.height / 2 + 10;
 
   createExplosion(ex, ey);
 
-  clickTime = Date.now();
+  // Show message after 1.2s no matter what (fallback)
+  setTimeout(() => {
+    if (!explosionDone) {
+      explosionDone = true;
+      message.classList.add('show');
+    }
+  }, 1200);
 }
 
 heartWrap.addEventListener('click', handleClick);
-heartWrap.addEventListener('touchend', (e) => {
-  e.preventDefault();
-  handleClick(e);
-});
 
 // === Main Loop ===
 function loop() {
